@@ -1,0 +1,58 @@
+server:
+  port: 9910
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+  redis:
+    database: 15
+    host: 10.200.157.139
+    port: 6379
+    password: Zchzredis2017
+    lettuce:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: 1
+
+# 熔断 HystrixCommandProperties  配置类 监控 http://m.blog.csdn.net/u012702547/article/details/78224483
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 90000 #断路器的超时时间,断路器的超时时间需要大于ribbon的超时时间，不然不会触发重试。
+
+# 均衡负载  DefaultClientConfigImpl  配置类
+ribbon:
+  ConnectTimeout: 1000 #ribbon请求连接的超时时间
+  ReadTimeout: 60000 #请求处理的超时时间
+
+apibasicauth:
+  services:
+    XLAOY-SERVER:
+      username: xlaoy
+      password: 123456
+
+jwt:
+  secret: wocao
+
+#打开actuator的所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

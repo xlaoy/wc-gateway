@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="com.xlaoy" level="INFO" />
+    <!--<logger name="org.springframework.cloud.gateway" level="TRACE" />
+    <logger name="org.springframework.http.server.reactive" level="DEBUG" />
+    <logger name="org.springframework.web.reactive" level="DEBUG" />
+    <logger name="org.springframework.security" level="DEBUG" />
+    <logger name="reactor.ipc.netty" level="DEBUG" />-->
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
