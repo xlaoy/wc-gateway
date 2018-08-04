@@ -1,25 +1,21 @@
 package com.xlaoy.wcgateway.security;
 
 import com.xlaoy.common.constants.RedisHashName;
-import com.xlaoy.common.constants.SSOConstants;
+import com.xlaoy.wcgateway.support.ResourceKeysHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -28,6 +24,10 @@ public class ApiReactiveAuthorizationManager implements ReactiveAuthorizationMan
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ReactiveRedisTemplate reactiveRedisTemplate;
+    @Autowired
+    private ResourceKeysHolder resourceKeysHolder;
+
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext context) {
@@ -54,11 +54,16 @@ public class ApiReactiveAuthorizationManager implements ReactiveAuthorizationMan
      * @return
      */
     private List<String> getURLPermission(String url) {
-        Object obj = reactiveRedisTemplate.opsForHash().get(RedisHashName.URL_PERMISSION, url).block();
-        if(obj != null) {
-            return (ArrayList<String>)obj;
-        }
-        return null;
+        List<String> list = new ArrayList<>();
+        resourceKeysHolder.getResourceKeysHolder().forEach(resource -> {
+            if(pathMatcher.match(resource, url)) {
+                Object obj = reactiveRedisTemplate.opsForHash().get(RedisHashName.URL_PERMISSION, resource).block();
+                if(obj != null) {
+                    list.addAll((ArrayList<String>)obj);
+                }
+            }
+        });
+        return list;
     }
 
 }

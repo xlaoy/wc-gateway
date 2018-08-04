@@ -41,6 +41,7 @@ public class SecurityConfig {
                     .addFilterAt(jwtTokenWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                     .authorizeExchange()
                     .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                    .pathMatchers("/refesh_resource_keys").permitAll()
                     .anyExchange()
                     .access(apiReactiveAuthorizationManager)
                     .and()
