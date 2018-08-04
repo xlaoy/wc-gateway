@@ -1,7 +1,6 @@
 package com.xlaoy.wcgateway.security;
 
 import com.xlaoy.common.constants.RedisHashName;
-import com.xlaoy.wcgateway.support.ResourceKeysHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,6 @@ public class ApiReactiveAuthorizationManager implements ReactiveAuthorizationMan
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ReactiveRedisTemplate reactiveRedisTemplate;
-    @Autowired
-    private ResourceKeysHolder resourceKeysHolder;
 
     private AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -55,8 +52,8 @@ public class ApiReactiveAuthorizationManager implements ReactiveAuthorizationMan
      */
     private List<String> getURLPermission(String url) {
         List<String> list = new ArrayList<>();
-        resourceKeysHolder.getResourceKeysHolder().forEach(resource -> {
-            if(pathMatcher.match(resource, url)) {
+        reactiveRedisTemplate.opsForHash().keys(RedisHashName.URL_PERMISSION).toIterable().forEach(resource -> {
+            if(pathMatcher.match(resource.toString(), url)) {
                 Object obj = reactiveRedisTemplate.opsForHash().get(RedisHashName.URL_PERMISSION, resource).block();
                 if(obj != null) {
                     list.addAll((ArrayList<String>)obj);

@@ -29,6 +29,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -115,6 +116,7 @@ public class JwtTokenWebFilter implements WebFilter {
             claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             logger.warn("jwttoken过期：{}", e.getMessage());
+            //Date expiration = claims.getExpiration();
             return null;
         }
 
