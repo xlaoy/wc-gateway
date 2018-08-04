@@ -1,5 +1,6 @@
 package com.xlaoy.wcgateway.config;
 
+import com.xlaoy.common.constants.SSOConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,7 +32,8 @@ public class WebConfig implements WebFluxConfigurer {
                         HttpMethod.POST.name(),
                         HttpMethod.PUT.name(),
                         HttpMethod.DELETE.name())
-                .allowedHeaders(CorsConfiguration.ALL);
+                .allowedHeaders(CorsConfiguration.ALL)
+                .exposedHeaders(SSOConstants.JWT_TOKEN);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
         source.registerCorsConfiguration("/**", corsRegistration.getCorsConfiguration());
         return new CorsWebFilter(source);

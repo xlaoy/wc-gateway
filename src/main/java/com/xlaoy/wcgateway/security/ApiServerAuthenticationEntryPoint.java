@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -23,17 +24,11 @@ public class ApiServerAuthenticationEntryPoint implements ServerAuthenticationEn
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
 
-        Throwable throwable = e.getCause();
+        logger.error("用户未登录,url[{}]", exchange.getRequest().getURI().getPath());
 
-        if(throwable instanceof AccessDeniedException) {
-            return Mono.empty();
-        } else {
-            logger.error("用户未登录,url[{}]", exchange.getRequest().getURI().getPath());
-
-            return ReactiveJsonResponseWriter.response(exchange.getResponse())
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .message("用户未登录").print();
-        }
+        return ReactiveJsonResponseWriter.response(exchange.getResponse())
+                .status(HttpStatus.UNAUTHORIZED)
+                .message("用户未登录").print();
 
     }
 }
